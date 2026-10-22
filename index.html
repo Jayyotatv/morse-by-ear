@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Morse by Ear</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a training manual. Wide left margin holds the stage number, right column holds the lesson.
+   Paper tape (marks drawn to real timing units) is the one signature element. The keying stage is a dark band. */
+:root{
+  --paper:#F1F4F2; --surface:#FFFFFF; --chip:#E2E8E5; --ink:#13202A; --muted:#55636C; --rule:#D3DBD7;
+  --wire:#1D5C78; --lamp:#A65A06; --on-lamp:#FFFFFF; --lamp-soft:#F5E6D0; --ok:#2C7A4C; --bad:#B3362B;
+  --band:#13202A; --band-surface:#1C2C38; --band-ink:#E9EEEB; --band-muted:#9EACB4;
+  --shadow:0 1px 2px rgba(19,32,42,.06),0 4px 14px rgba(19,32,42,.07);
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E151B; --surface:#16222B; --chip:#1F2D37; --ink:#E5EBE8; --muted:#98A6AE; --rule:#26343E;
+    --wire:#76B8D4; --lamp:#F0A43A; --on-lamp:#10171D; --lamp-soft:#3A2A14; --ok:#62BE88; --bad:#EC7B70;
+    --band:#070B0E; --band-surface:#121C24; --band-ink:#E5EBE8; --band-muted:#8C9AA2;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E151B; --surface:#16222B; --chip:#1F2D37; --ink:#E5EBE8; --muted:#98A6AE; --rule:#26343E;
+  --wire:#76B8D4; --lamp:#F0A43A; --on-lamp:#10171D; --lamp-soft:#3A2A14; --ok:#62BE88; --bad:#EC7B70;
+  --band:#070B0E; --band-surface:#121C24; --band-ink:#E5EBE8; --band-muted:#8C9AA2;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+h1,h2,h3{font-family:var(--f-display);line-height:1.02;text-wrap:balance;margin:0;font-weight:800;letter-spacing:.005em}
+h1{font-size:clamp(46px,8vw,92px)}
+h2{font-size:clamp(34px,5vw,52px)}
+h3{font-size:26px;font-weight:700}
+p{margin:0;text-wrap:pretty;max-width:65ch}
+a{color:var(--wire);text-underline-offset:3px}
+.mono{font-family:var(--f-mono)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--wire);outline-offset:2px}
+
+/* nav */
+.top{padding-block:18px}
+.top .wrap{display:flex;align-items:center;gap:24px;justify-content:space-between}
+.brand{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.02em;white-space:nowrap}
+.brand span{color:var(--lamp)}
+.nav{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.nav a{color:var(--muted);text-decoration:none;font-size:15px;white-space:nowrap}
+.nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{padding-block:40px 56px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:end}
+.hero p.lede{font-size:20px;margin-top:20px;color:var(--muted)}
+.hero .actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.lamp-card{background:var(--surface);border-radius:10px;box-shadow:var(--shadow);padding:22px;display:grid;gap:14px;min-width:0}
+.lamp-card .cap{font-size:14px;color:var(--muted)}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr;gap:32px}}
+
+/* buttons */
+.btn{appearance:none;border:0;cursor:pointer;font:700 16px/1 var(--f-body);padding:13px 18px;border-radius:6px;background:var(--lamp);color:var(--on-lamp);white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{filter:brightness(1.06)}
+.btn.q{background:var(--chip);color:var(--ink)}
+.btn.sm{padding:9px 13px;font-size:14px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.tri{width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.sq{width:10px;height:10px;background:currentColor}
+
+/* tape */
+.tape-scroll{overflow-x:auto;padding-bottom:4px}
+.tape{position:relative;height:58px;flex:none}
+.tape .m{position:absolute;top:22px;height:12px;background:var(--ink);border-radius:2px}
+.tape .lbl{position:absolute;top:0;font:600 13px/1 var(--f-mono);color:var(--muted)}
+.tape .tick{position:absolute;top:40px;width:1px;height:6px;background:var(--muted);opacity:.6}
+.tape .tn{position:absolute;top:47px;font:400 11px/1 var(--f-mono);color:var(--muted);transform:translateX(-50%)}
+.tape .head{position:absolute;top:14px;width:2px;height:28px;background:var(--lamp);left:0;opacity:0}
+.tape.run .head{opacity:1}
+
+/* settings */
+.settings{background:var(--surface);box-shadow:var(--shadow);border-radius:10px;padding:20px 22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.settings label{display:block;font-size:14px;color:var(--muted)}
+.settings output{font:600 15px var(--f-mono);color:var(--ink)}
+.settings .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+input[type=range]{width:100%;accent-color:var(--lamp)}
+.settings .note{grid-column:1/-1;font-size:14px;color:var(--muted)}
+@media (max-width:760px){.settings{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* stage layout */
+.stage{padding-block:72px}
+.stage + .stage{border-top:1px solid var(--rule)}
+.stage .wrap{display:grid;grid-template-columns:180px minmax(0,1fr);gap:40px}
+.stage .num{font-family:var(--f-display);font-weight:800;font-size:96px;line-height:.8;color:var(--lamp)}
+.stage .num small{display:block;font-size:17px;font-family:var(--f-body);font-weight:700;color:var(--muted);margin-top:14px;line-height:1.3}
+.stage .body{display:grid;gap:24px;min-width:0}
+.stage .body > *{min-width:0}
+.stage .intro{font-size:19px;color:var(--muted)}
+@media (max-width:760px){.stage{padding-block:52px}.stage .wrap{grid-template-columns:1fr;gap:16px}.stage .num{font-size:64px}.stage .num small{display:inline;margin-left:10px}}
+
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.cols2 > div{display:grid;gap:10px;align-content:start;min-width:0}
+@media (max-width:760px){.cols2{grid-template-columns:1fr}}
+.rules{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.rules li{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.rules li:last-child{border-bottom:0}
+.rules b{font-family:var(--f-mono);font-weight:600}
+.panel{background:var(--surface);border-radius:10px;box-shadow:var(--shadow);padding:24px;min-width:0}
+.callout{background:var(--lamp-soft);border-radius:8px;padding:16px 18px}
+.callout p{max-width:none}
+
+/* trainer */
+.trainer{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;align-items:start}
+.syllabus{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.syllabus button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:28px 1fr;gap:4px 10px;width:100%;padding:10px 12px;border-radius:6px}
+.syllabus button:hover{background:var(--chip)}
+.syllabus button[aria-current="true"]{background:var(--surface);box-shadow:var(--shadow)}
+.syllabus .n{font:800 22px/1 var(--f-display);color:var(--muted)}
+.syllabus [aria-current="true"] .n{color:var(--lamp)}
+.syllabus .c{font:600 15px/1.3 var(--f-mono)}
+.syllabus .s{grid-column:2;font-size:13px;color:var(--muted)}
+.syllabus .s.pass{color:var(--ok);font-weight:700}
+@media (max-width:860px){
+  .trainer{grid-template-columns:1fr}
+  .syllabus{grid-auto-flow:column;grid-auto-columns:150px;overflow-x:auto;padding-bottom:6px}
+}
+.lesson{display:grid;gap:20px}
+.lesson-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+.pad{display:flex;flex-wrap:wrap;gap:10px}
+.key{all:unset;box-sizing:border-box;cursor:pointer;width:76px;min-height:76px;border-radius:8px;background:var(--paper);display:grid;place-items:center;align-content:center;gap:6px;padding:8px 4px;text-align:center}
+.key:hover{background:var(--chip)}
+.key.on{background:var(--lamp);color:var(--on-lamp)}
+.key b{font:800 30px/1 var(--f-display)}
+.key i{font:400 12px/1 var(--f-mono);font-style:normal;letter-spacing:.08em;color:inherit;opacity:.75}
+.hide-pat .key i{visibility:hidden}
+.toggle{display:inline-flex;gap:8px;align-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--lamp);width:16px;height:16px}
+
+/* drill */
+.drill{display:grid;gap:14px;padding-top:20px;border-top:1px solid var(--rule)}
+.drill .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.drill .meta{font-size:14px;color:var(--muted)}
+.drill label{font-size:15px;font-weight:700}
+.drill .entry{display:flex;gap:10px;flex-wrap:wrap}
+.drill input[type=text]{flex:1 1 260px;min-width:0;font:600 20px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:12px 14px;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink)}
+.result{display:grid;gap:8px}
+.result .score{font-weight:700}
+.result .score.pass{color:var(--ok)}
+.result .line{font:600 18px/1.6 var(--f-mono);display:flex;flex-wrap:wrap;gap:4px 16px}
+.result .ok{color:var(--ok)} .result .no{color:var(--bad);text-decoration:underline;text-decoration-thickness:2px}
+.result .sub{font-size:14px;color:var(--muted)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th{text-align:left;font-size:14px;color:var(--muted);font-weight:700;padding:8px 12px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.mono{white-space:nowrap;font-weight:600}
+
+/* sets switcher */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+
+/* dark band: keying */
+.band{background:var(--band);color:var(--band-ink)}
+.band .intro,.band .num small{color:var(--band-muted)}
+.band .panel{background:var(--band-surface);box-shadow:none}
+.band .btn.q{background:#ffffff14;color:var(--band-ink)}
+.band a{color:#8CC6DE}
+.band .rules li{border-color:#ffffff1a}
+.keyer{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:start}
+@media (max-width:860px){.keyer{grid-template-columns:1fr}}
+.paddle{all:unset;box-sizing:border-box;cursor:pointer;width:100%;height:170px;border-radius:12px;background:#ffffff0d;display:grid;place-items:center;text-align:center;user-select:none;-webkit-user-select:none;touch-action:none}
+.paddle b{font:800 34px/1 var(--f-display);display:block}
+.paddle span{font-size:14px;color:var(--band-muted)}
+.paddle.down{background:var(--lamp);color:var(--on-lamp)}
+.paddle.down span{color:inherit}
+.out{font:600 26px/1.4 var(--f-mono);min-height:44px;word-break:break-all;letter-spacing:.06em}
+.out .cur{color:var(--lamp)}
+.ktape{display:flex;align-items:center;height:22px;overflow:hidden;justify-content:flex-end}
+.ktape i{flex:none;height:10px;background:var(--band-ink);border-radius:2px}
+.ktape u{flex:none;height:10px}
+.ktape s{flex:none;width:2px;height:22px;background:var(--lamp);opacity:.6;margin:0 3px}
+.kstat{font-size:14px;color:var(--band-muted)}
+.target{font:800 44px/1 var(--f-display);letter-spacing:.04em}
+.kfb{font-weight:700;min-height:1.6em}
+.kfb.ok{color:#7AD39E}
+.kfb.no{color:#F2958B}
+.band select{font:600 15px var(--f-body);padding:8px 10px;border-radius:6px;border:0;background:#ffffff14;color:var(--band-ink)}
+.band select option{color:#13202A}
+
+/* reference chart */
+.chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.chart .key{width:auto;min-height:0;grid-template-columns:auto 1fr;place-items:center start;padding:12px 14px;gap:12px;background:var(--surface);box-shadow:var(--shadow)}
+.chart .key b{font-size:26px;min-width:22px}
+.chart .key i{font-size:14px;opacity:1}
+.chart .key.on i{color:var(--on-lamp)}
+.chart-group{display:grid;gap:12px}
+.chart-group h3{font-size:22px}
+textarea{width:100%;min-height:90px;font:400 18px var(--f-body);padding:12px 14px;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);resize:vertical}
+.codeout{font:600 17px/1.8 var(--f-mono);word-break:break-word;color:var(--ink)}
+.codeout .w{color:var(--lamp)}
+
+.steps{counter-reset:s;display:grid;gap:22px;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px}
+.steps li::before{counter-increment:s;content:counter(s);font:800 34px/1 var(--f-display);color:var(--lamp)}
+.steps h3{margin-bottom:6px}
+.steps p + p{margin-top:8px}
+
+/* simple start */
+.sound summary{cursor:pointer;font-weight:700;color:var(--muted);padding-block:10px;width:max-content;max-width:100%}
+.sound[open] summary{margin-bottom:12px}
+.simple{display:grid}
+.step{display:grid;grid-template-columns:56px minmax(0,1fr);gap:16px;padding-block:22px;border-bottom:1px solid var(--rule)}
+.step:first-child{padding-top:0}
+.step .sn{font:800 40px/1 var(--f-display);color:var(--lamp)}
+.step .txt{display:grid;gap:12px;min-width:0}
+.step .key{background:var(--surface);box-shadow:var(--shadow)}
+.quiz{display:grid;gap:16px}
+.quiz .meta{font-size:14px;color:var(--muted)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices .key{width:60px;min-height:60px}
+.choices .key.right{background:var(--ok);color:var(--paper)}
+.choices .key.wrong{background:var(--bad);color:var(--paper)}
+.qfb{font-weight:700;min-height:1.6em}
+.patterns li{grid-template-columns:130px minmax(0,1fr)}
+.patterns .pn{font-weight:700}
+.patterns .pv{display:grid;gap:6px}
+.patterns .pv small{font-size:15px;color:var(--muted)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.chip{all:unset;cursor:pointer;font:600 15px var(--f-mono);padding:5px 9px;border-radius:5px;background:var(--chip);white-space:nowrap}
+.chip.on{background:var(--lamp);color:var(--on-lamp)}
+details.more summary{cursor:pointer;font-weight:700;color:var(--wire)}
+.more-body{display:grid;gap:24px;margin-top:20px}
+.more-body > *{min-width:0}
+@media (max-width:560px){.patterns li{grid-template-columns:1fr;gap:6px}.step{grid-template-columns:40px minmax(0,1fr)}}
+
+footer{padding-block:40px 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--rule)}
+@media (prefers-reduced-motion:reduce){.tape .head{display:none}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Morse <span>by</span> Ear</div>
+    <nav class="nav" aria-label="Course sections">
+      <a href="#start">Start</a>
+      <a href="#receive">Speed</a>
+      <a href="#words">Words</a>
+      <a href="#send">Sending</a>
+      <a href="#air">On the air</a>
+      <a href="#reference">Chart</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Learn Morse code by sound, one letter at a time</h1>
+      <p class="lede">Start with just two letters, E and T. Add a few at a time, tap to hear each one, and quiz yourself. When you're ready, speed lessons, a sending key and an on-air plan are all here too.</p>
+      <div class="actions">
+        <a class="btn" href="#start">Start with E and T</a>
+        <a class="btn q" href="#receive">Jump to speed training</a>
+      </div>
+    </div>
+    <div class="lamp-card">
+      <div class="cap">This is CQ, the call for "anyone out there?" Press play and listen to the rhythm.</div>
+      <div class="tape-scroll"><div class="tape" id="heroTape"></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn sm" data-play="CQ" data-tape="heroTape" type="button"><span class="tri"></span>Play CQ</button>
+        <button class="btn sm q" data-play="CQ CQ DE K1ABC K" type="button"><span class="tri"></span>Play a full call</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <details class="sound"><summary>Sound settings: speed, tone, volume</summary>
+  <div class="settings" id="settings">
+    <div>
+      <div class="row"><label for="cwpm">Character speed</label><output id="cwpmV"></output></div>
+      <input type="range" id="cwpm" min="12" max="35" step="1">
+    </div>
+    <div>
+      <div class="row"><label for="ewpm">Overall speed</label><output id="ewpmV"></output></div>
+      <input type="range" id="ewpm" min="5" max="35" step="1">
+    </div>
+    <div>
+      <div class="row"><label for="freq">Tone</label><output id="freqV"></output></div>
+      <input type="range" id="freq" min="400" max="900" step="10">
+    </div>
+    <div>
+      <div class="row"><label for="vol">Volume</label><output id="volV"></output></div>
+      <input type="range" id="vol" min="0.05" max="1" step="0.05">
+    </div>
+    <p class="note">Keep character speed at 18 to 20 WPM from day one. When a drill feels too fast, lower overall speed instead. That stretches the gaps between letters and leaves each letter's sound the same. Your settings are saved in this browser.</p>
+  </div>
+  </details>
+</div>
+
+<section class="stage" id="start">
+  <div class="wrap">
+    <div class="num">1<small>Start here</small></div>
+    <div class="body">
+      <h2>Five small steps</h2>
+      <p class="intro">Every letter is made of two sounds. A short beep called a dit (·) and a long beep called a dah (–). Start with the shortest letters and work up. Tap a letter to hear it, say it out loud, then quiz yourself.</p>
+      <div class="simple" id="simple"></div>
+      <div class="panel quiz" id="quiz"></div>
+      <div>
+        <h3 style="margin-bottom:12px">Patterns that make it stick</h3>
+        <ul class="rules patterns" id="patterns"></ul>
+      </div>
+      <div class="callout"><p><b>Beginner tips.</b> Say it, don't count it. A is "di-dah", B is "dah-di-di-dit". Practice 10 minutes a day. A wrong guess is fine, just replay it and try again.</p></div>
+      <details class="more"><summary>The exact timing, and how the speed lessons work</summary>
+      <div class="more-body">
+      <div class="panel">
+        <div class="tape-scroll"><div class="tape" id="parisTape"></div></div>
+        <p style="margin-top:12px;font-size:15px;color:var(--muted)">The word PARIS drawn to scale, units 0 to 50. Speed in WPM means how many times you could send PARIS in one minute. At 20 WPM one unit lasts 60 milliseconds.</p>
+      </div>
+      <div class="cols2">
+        <div>
+          <h3>The five timing rules</h3>
+          <ul class="rules">
+            <li><b>dit</b><span>1 unit of tone</span></li>
+            <li><b>dah</b><span>3 units of tone</span></li>
+            <li><b>inside a letter</b><span>1 unit of silence between parts</span></li>
+            <li><b>between letters</b><span>3 units of silence</span></li>
+            <li><b>between words</b><span>7 units of silence</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>How this course teaches</h3>
+          <p><b>Koch method.</b> You start with two to four characters at full speed and add more only when you copy 90 percent correctly. You never learn a slow version you later have to unlearn.</p>
+          <p><b>Farnsworth spacing.</b> Letters play at 20 WPM, and the extra time goes into the gaps. You get time to think without the letters changing shape.</p>
+          <p><b>Ears only.</b> Patterns are hidden by default. If you picture dots and dashes, you add a lookup step that caps you around 10 WPM.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p><b>Three habits that decide how fast you learn.</b> Practice every day in short sessions, two 10 minute blocks beat one hour on Sunday. When you miss a letter, write a dash and move on, chasing it makes you miss the next three. Say "dit" and "dah" out loud when you hum a letter, never "dot" and "dash".</p>
+      </div>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="receive">
+  <div class="wrap">
+    <div class="num">2<small>Build speed</small></div>
+    <div class="body">
+      <h2>Ten lessons, forty characters</h2>
+      <p class="intro">Done the five steps? Now train your ear to catch letters at real speed. Tap each new character a few times and hum it back. Then play a drill, type what you hear, and check. Score 90 percent or better and move to the next lesson. Expect two to five days per lesson.</p>
+      <div class="trainer">
+        <ul class="syllabus" id="syllabus"></ul>
+        <div class="panel lesson" id="lesson"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="words">
+  <div class="wrap">
+    <div class="num">3<small>Words and calls</small></div>
+    <div class="body">
+      <h2>From letters to words you'll hear on air</h2>
+      <p class="intro">Start this stage after lesson 10, or after lesson 6 if you want variety. The goal shifts from single letters to whole words. Common words like THE and CQ should start to sound like one shape.</p>
+      <div class="panel lesson">
+        <div class="seg" id="setSeg" role="group" aria-label="Drill set"></div>
+        <p id="setNote" style="color:var(--muted);font-size:15px"></p>
+        <div id="wordDrill"></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px">The short codes every contact uses</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Meaning</th><th>Sound</th></tr></thead>
+            <tbody id="abbrTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage band" id="send">
+  <div class="wrap">
+    <div class="num">4<small>Send</small></div>
+    <div class="body">
+      <h2>Key it yourself</h2>
+      <p class="intro">Start sending once you can copy most letters, around lesson 6. Hold the key below, or click it and use the space bar, the way you'd use a straight key. The decoder reads your timing, so clean rhythm is the only way to get the right letters.</p>
+      <div class="keyer">
+        <div class="panel" style="display:grid;gap:16px">
+          <button class="paddle" id="paddle" type="button" aria-label="Morse key. Hold to send tone. Space bar also works when focused."><div><b>Key</b><span>Hold to send, or press space</span></div></button>
+          <div class="ktape" id="ktape" aria-hidden="true"></div>
+          <div class="out" id="kout" aria-live="polite"></div>
+          <div class="kstat" id="kstat">Send a dit to see how your timing compares.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button class="btn sm q" id="kclear" type="button">Clear</button>
+            <label for="swpm" class="kstat">Sending speed</label>
+            <select id="swpm">
+              <option value="8">8 WPM</option><option value="10">10 WPM</option><option value="12">12 WPM</option>
+              <option value="15">15 WPM</option><option value="18">18 WPM</option><option value="20">20 WPM</option><option value="25">25 WPM</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel" style="display:grid;gap:12px">
+          <div class="kstat">Send this word</div>
+          <div class="target" id="ktarget">CQ</div>
+          <div class="kfb" id="kfb" aria-live="polite"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn sm" id="khear" type="button"><span class="tri"></span>Hear it</button>
+            <button class="btn sm q" id="knext" type="button">Next word</button>
+          </div>
+          <ul class="rules" style="margin-top:8px">
+            <li style="grid-template-columns:1fr"><span class="kstat">Make dahs three times your dits. Most beginners send dahs too short.</span></li>
+            <li style="grid-template-columns:1fr"><span class="kstat">Pause on purpose between letters. Running letters together is the most common sending fault.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cols2">
+        <div>
+          <h3>Choosing a real key</h3>
+          <p>A straight key is the classic up and down lever, you make every dit and dah by hand. It is cheap and teaches rhythm. An iambic paddle with an electronic keyer makes the dits and dahs for you. Most operators move to a paddle once they pass 15 WPM.</p>
+        </div>
+        <div>
+          <h3>A sending routine</h3>
+          <p>Five minutes a day is enough. Send the alphabet, then numbers, then a sentence from a book. Record yourself on your phone and copy it back the next day. If you can't read your own sending, nobody else can either.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="air">
+  <div class="wrap">
+    <div class="num">5<small>On the air</small></div>
+    <div class="body">
+      <h2>Your first real contact</h2>
+      <p class="intro">Most people learn Morse to use it on ham radio. A basic CW contact, called a QSO, follows a script, so you can make one long before you can copy free conversation.</p>
+      <ol class="steps">
+        <li><div><h3>Get licensed</h3><p>In the US there has been no Morse test since 2007. The entry Technician license already gives you CW on parts of the 80, 40, 15 and 10 meter bands. Find a test session through the ARRL at <a href="https://www.arrl.org/find-an-amateur-radio-license-exam-session" target="_blank" rel="noopener">arrl.org</a>. Other countries have their own exams.</p></div></li>
+        <li><div><h3>Listen before you transmit</h3><p>Copy the ARRL station W1AW, which sends code practice on a published schedule at several speeds. With no radio yet, tune a WebSDR receiver online at <a href="http://websdr.org" target="_blank" rel="noopener">websdr.org</a> and listen near the bottom of the 40 meter band.</p></div></li>
+        <li><div><h3>Learn the standard exchange</h3><p>A first contact is CQ, callsigns, signal report, name, location, and 73. Practice the lines in the QSO drill in stage 3 until you can copy them at 15 WPM overall.</p><p class="mono" style="font-size:15px;color:var(--muted)">CQ CQ DE K1ABC K · K1ABC DE W7XYZ K · W7XYZ DE K1ABC UR RST 579 NAME JOHN QTH OHIO BK</p></div></li>
+        <li><div><h3>Join a club that holds slow sessions</h3><p>CWops runs the free CW Academy classes, the Long Island CW Club teaches online at every level, and the Straight Key Century Club hosts relaxed, slow contacts. You'll find patient operators who expect beginners.</p></div></li>
+        <li><div><h3>Ask for slower when you need it</h3><p>Send QRS to ask the other station to slow down. Every experienced operator was once in your seat, and almost all of them will slow down without a second thought.</p></div></li>
+      </ol>
+      <div>
+        <h3 style="margin-bottom:12px">A realistic twelve week plan</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Weeks</th><th>Focus</th><th>Daily practice</th><th>Done when</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">1 to 2</td><td>Lessons 1 to 3</td><td>Two 10 minute listening blocks</td><td>Lesson 3 at 90 percent</td></tr>
+              <tr><td class="mono">3 to 5</td><td>Lessons 4 to 7</td><td>Listening, plus 5 minutes humming letters back</td><td>Lesson 7 at 90 percent</td></tr>
+              <tr><td class="mono">6 to 8</td><td>Lessons 8 to 10, start sending</td><td>15 minutes listening, 5 minutes keying</td><td>All 40 characters at 90 percent</td></tr>
+              <tr><td class="mono">9 to 10</td><td>Words, abbreviations, callsigns</td><td>Word drills, overall speed up to 12 WPM</td><td>Callsigns at 90 percent</td></tr>
+              <tr><td class="mono">11 to 12</td><td>QSO lines, real listening</td><td>W1AW practice or WebSDR, overall 15 WPM</td><td>You copy a full exchange</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px;font-size:15px;color:var(--muted)">Everyone learns at a different pace. Plateaus around lessons 5 and 8 are normal. Keep showing up and they pass.</p>
+      </div>
+      <div class="cols2">
+        <div>
+          <h3>Other free tools</h3>
+          <p><a href="https://lcwo.net" target="_blank" rel="noopener">LCWO.net</a> runs the same Koch order with progress tracking. <a href="https://morsecode.ninja" target="_blank" rel="noopener">Morse Code Ninja</a> has thousands of audio drills to play in the car. Morse Runner simulates a busy contest when you want speed.</p>
+        </div>
+        <div>
+          <h3>When you get stuck</h3>
+          <p>If two letters keep swapping, drill only those two for a day. If a whole lesson stalls, go back one lesson for two sessions. If everything blurs, drop overall speed by 2 WPM, never character speed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="reference">
+  <div class="wrap">
+    <div class="num">R<small>Reference</small></div>
+    <div class="body">
+      <h2>Full chart and translator</h2>
+      <p class="intro">Use the chart to check a letter after a drill, not to learn from. Tap any character to hear it.</p>
+      <div class="chart-group"><h3>Letters</h3><div class="chart" id="chL"></div></div>
+      <div class="chart-group"><h3>Numbers</h3><div class="chart" id="chN"></div></div>
+      <div class="chart-group"><h3>Punctuation and prosigns</h3><div class="chart" id="chP"></div></div>
+      <div class="panel" style="display:grid;gap:14px">
+        <h3>Translator</h3>
+        <label for="tx" style="font-size:15px;font-weight:700">Type any text</label>
+        <textarea id="tx">CQ CQ DE K1ABC K</textarea>
+        <div class="codeout" id="txout"></div>
+        <div><button class="btn sm" id="txplay" type="button"><span class="tri"></span>Play</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Morse by Ear. Character order follows the Koch sequence used by LCWO. Gap timing uses the ARRL Farnsworth formula.</div>
+</footer>
+
+<script>
+(function(){
+const CODE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',
+'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
+'.':'.-.-.-',',':'--..--','?':'..--..','/':'-..-.','=':'-...-','+':'.-.-.','-':'-....-','@':'.--.-.',"'":'.----.','!':'-.-.--',':':'---...'};
+const REV={};Object.keys(CODE).forEach(k=>{REV[CODE[k]]=k});
+const PROSIGNS=[['AR','.-.-.','End of message'],['SK','...-.-','End of contact'],['BT','-...-','Break, new thought'],['KN','-.--.','Go ahead, only you'],['SOS','...---...','Distress']];
+const LESSONS=['KMUR','ESNA','PTLW','I.JZ','=FOY',',VG5','/Q92','H38B','?47C','1D60X'];
+const TIPS=[
+ 'Start here even if it feels fast. Hear K as one rhythm, dah di dah, not as three parts.',
+ 'E is the shortest sound in the code. Listen for it between the longer letters.',
+ 'P and W start the same way. The difference is at the end.',
+ 'The period has six parts. Let it roll by as one shape and don\'t count.',
+ '= is also called BT. On the air it separates one thought from the next.',
+ '5 is five dits. Hear it as a quick buzz rather than counting.',
+ '/ shows up in callsigns like W1ABC/P, which means portable.',
+ 'H, S and 5 differ only in length. If they blur, lower overall speed, never character speed.',
+ 'You\'ll hear ? whenever someone asks for a repeat.',
+ 'Finish this one and you can copy every character in common use on the air.'
+];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* settings */
+const S={cwpm:20,ewpm:10,freq:600,vol:0.5,swpm:15};
+try{Object.assign(S,JSON.parse(localStorage.getItem('mbe-settings')||'{}'))}catch(e){}
+const saveS=()=>{try{localStorage.setItem('mbe-settings',JSON.stringify(S))}catch(e){}};
+let P={best:{}};
+try{P=Object.assign(P,JSON.parse(localStorage.getItem('mbe-progress')||'{}'))}catch(e){}
+const saveP=()=>{try{localStorage.setItem('mbe-progress',JSON.stringify(P))}catch(e){}};
+
+function timing(std){
+  if(std) return {u:1,cg:3,wg:7};
+  const c=S.cwpm,e=Math.min(S.ewpm,c),u=1.2/c;
+  let cg=3*u,wg=7*u;
+  if(e<c){const ta=(60*c-37.2*e)/(c*e);cg=3*ta/19;wg=7*ta/19}
+  return {u,cg,wg};
+}
+/* text -> list of {ch,code} or ' ' ; <AR> style prosigns run letters together */
+function tokens(text){
+  const out=[];const t=String(text).toUpperCase();
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(/\s/.test(c)){if(out.length&&out[out.length-1]!==' ')out.push(' ');continue}
+    if(c==='<'){const j=t.indexOf('>',i);if(j>i){const w=t.slice(i+1,j);const code=w.split('').map(x=>CODE[x]||'').join('');if(code)out.push({ch:w,code});i=j;continue}}
+    if(CODE[c])out.push({ch:c,code:CODE[c]});
+  }
+  while(out.length&&out[out.length-1]===' ')out.pop();
+  return out;
+}
+
+/* audio */
+let ctx=null,cur=null,curBtn=null,curDone=null;
+function ac(){if(!ctx){const A=window.AudioContext||window.webkitAudioContext;ctx=new A()}if(ctx.state==='suspended')ctx.resume();return ctx}
+function stop(){
+  if(cur){try{cur.o.stop()}catch(e){}try{cur.o.disconnect();cur.g.disconnect()}catch(e){}cur=null}
+  const d=curDone;curDone=null;if(d)d();
+}
+function play(text,done){
+  stop();const a=ac();const T=timing();const u=T.u;
+  const g=a.createGain();g.gain.value=0;const o=a.createOscillator();o.type='sine';o.frequency.value=S.freq;o.connect(g);g.connect(a.destination);
+  const t0=a.currentTime+0.08;let t=t0;const v=S.vol*0.6,r=0.005;
+  tokens(text).forEach(tok=>{
+    if(tok===' '){t+=T.wg-T.cg;return}
+    for(let k=0;k<tok.code.length;k++){
+      const d=tok.code[k]==='.'?u:3*u;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+r);g.gain.setValueAtTime(v,t+d-r);g.gain.linearRampToValueAtTime(0,t+d);
+      t+=d;if(k<tok.code.length-1)t+=u;
+    }
+    t+=T.cg;
+  });
+  o.start(t0-0.01);o.stop(t+0.05);
+  const me={o,g};cur=me;curDone=done||null;
+  o.onended=()=>{if(cur===me){cur=null;const d=curDone;curDone=null;if(d)d()}};
+  return t-t0;
+}
+function setBtn(btn,on){
+  if(!btn)return;
+  if(isTile(btn)){btn.classList.toggle('on',on);return}
+  if(!btn.dataset.label)btn.dataset.label=btn.innerHTML;
+  btn.innerHTML=on?'<span class="sq"></span>Stop':btn.dataset.label;
+}
+const isTile=b=>b.classList.contains('key')||b.classList.contains('chip');
+function playFrom(btn,text,tapeId){
+  if(curBtn===btn&&cur&&!isTile(btn)){stop();return}
+  stop();
+  const b=btn;curBtn=b;setBtn(b,true);
+  const tape=tapeId?document.getElementById(tapeId):null;
+  const dur=play(text,()=>{setBtn(b,false);if(curBtn===b)curBtn=null;if(tape)resetHead(tape)});
+  if(tape)runHead(tape,dur);
+}
+
+/* paper tape */
+function drawTape(el,text,std,px,ruler){
+  const T=timing(std);const cg=std?3:T.cg/T.u,wg=std?7:T.wg/T.u;
+  let x=0,html='';const toks=tokens(text);
+  toks.forEach((tok,i)=>{
+    if(tok===' '){x+=wg-cg;return}
+    html+='<span class="lbl" style="left:'+(x*px)+'px">'+tok.ch+'</span>';
+    for(let k=0;k<tok.code.length;k++){const w=tok.code[k]==='.'?1:3;html+='<span class="m" style="left:'+(x*px)+'px;width:'+(w*px)+'px"></span>';x+=w;if(k<tok.code.length-1)x+=1}
+    if(i<toks.length-1)x+=cg;
+  });
+  if(std&&/\s$/.test(text))x+=wg;
+  if(ruler){for(let n=0;n<=x;n+=5){html+='<span class="tick" style="left:'+(n*px)+'px"></span>';if(n%10===0)html+='<span class="tn" style="left:'+(n*px)+'px">'+n+'</span>'}}
+  html+='<span class="head"></span>';
+  el.innerHTML=html;el.style.width=Math.ceil(x*px+(ruler?12:2))+'px';el.dataset.w=x*px;
+}
+function runHead(tape,dur){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const h=tape.querySelector('.head');if(!h)return;
+  h.style.transition='none';h.style.left='0px';tape.classList.add('run');void h.offsetWidth;
+  setTimeout(()=>{h.style.transition='left '+dur+'s linear';h.style.left=tape.dataset.w+'px'},80);
+}
+function resetHead(tape){const h=tape.querySelector('.head');tape.classList.remove('run');if(h){h.style.transition='none';h.style.left='0px'}}
+function redrawHero(){drawTape(document.getElementById('heroTape'),'CQ',false,7,false)}
+drawTape(document.getElementById('parisTape'),'PARIS ',true,9,true);
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-play]');if(!b)return;
+  playFrom(b,b.dataset.play,b.dataset.tape||null);
+});
+
+/* settings UI */
+const fmt={cwpm:v=>v+' WPM',ewpm:v=>Math.min(v,S.cwpm)+' WPM',freq:v=>v+' Hz',vol:v=>Math.round(v*100)+'%'};
+['cwpm','ewpm','freq','vol'].forEach(id=>{
+  const el=document.getElementById(id),o=document.getElementById(id+'V');
+  el.value=S[id];o.textContent=fmt[id](S[id]);
+  el.addEventListener('input',()=>{
+    S[id]=parseFloat(el.value);
+    if(id==='cwpm'&&S.ewpm>S.cwpm){S.ewpm=S.cwpm;document.getElementById('ewpm').value=S.ewpm}
+    if(id==='ewpm'&&S.ewpm>S.cwpm){S.ewpm=S.cwpm;el.value=S.cwpm}
+    ['cwpm','ewpm'].forEach(k=>document.getElementById(k+'V').textContent=fmt[k](S[k]));
+    o.textContent=fmt[id](S[id]);saveS();redrawHero();
+  });
+});
+redrawHero();
+
+/* drill */
+let drillN=0;
+function Drill(root,gen,opts){
+  opts=opts||{};const id='drill'+(drillN++);let items=gen();
+  root.innerHTML='<div class="drill"><div class="bar"><button class="btn" type="button" data-a="play"><span class="tri"></span>Play drill</button><button class="btn q" type="button" data-a="new">New drill</button><span class="meta"></span></div>'+
+   '<label for="'+id+'">Type what you hear, with a space between groups</label><div class="entry"><input type="text" id="'+id+'" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn q" type="button" data-a="check">Check</button></div><div class="result" aria-live="polite"></div></div>';
+  const q=s=>root.querySelector(s),input=q('input'),res=q('.result'),meta=q('.meta');
+  const setMeta=()=>{meta.textContent=items.length+' groups, '+items.join('').length+' characters'};setMeta();
+  q('[data-a=play]').addEventListener('click',e=>{playFrom(e.currentTarget,items.join(' '));input.focus({preventScroll:true})});
+  q('[data-a=new]').addEventListener('click',()=>{stop();items=gen();input.value='';res.innerHTML='';setMeta()});
+  const check=()=>{
+    const typed=input.value.toUpperCase().trim().split(/\s+/).filter(Boolean);
+    const total=items.join('').length;let right=0;const marks=[];
+    if(typed.length===items.length){
+      items.forEach((w,i)=>{const t=typed[i];marks.push(w.split('').map((c,j)=>{const ok=t[j]===c;if(ok)right++;return ok}))});
+    }else{
+      const flat=typed.join('');let p=0;
+      items.forEach(w=>{marks.push(w.split('').map(c=>{const ok=flat[p++]===c;if(ok)right++;return ok}))});
+    }
+    const pct=total?Math.round(right/total*100):0;const pass=pct>=(opts.pass||90);
+    const esc=c=>c.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+    const line=items.map((w,i)=>'<span>'+w.split('').map((c,j)=>'<span class="'+(marks[i][j]?'ok':'no')+'">'+esc(c)+'</span>').join('')+'</span>').join('');
+    res.innerHTML='<div class="score'+(pass?' pass':'')+'">'+right+' of '+total+' right, '+pct+' percent. '+(pass?(opts.passText||'Passed.'):'Aim for 90 percent. Play it again or try a new drill.')+'</div>'+
+      '<div class="sub">What was sent, misses underlined</div><div class="line">'+line+'</div>';
+    if(opts.onScore)opts.onScore(pct,pass);
+  };
+  q('[data-a=check]').addEventListener('click',check);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check()}});
+}
+
+/* lessons */
+const syl=document.getElementById('syllabus'),lessonEl=document.getElementById('lesson');
+let curLesson=0;
+for(let i=0;i<LESSONS.length;i++){if(!(P.best[i]>=90)){curLesson=i;break}if(i===LESSONS.length-1)curLesson=i}
+function sylRender(){
+  syl.innerHTML=LESSONS.map((l,i)=>{const b=P.best[i];const s=b>=90?'<span class="s pass">Passed, best '+b+'%</span>':(b!=null?'<span class="s">Best so far '+b+'%</span>':'<span class="s">Not started</span>');
+    return '<li><button type="button" data-l="'+i+'" aria-current="'+(i===curLesson)+'"><span class="n">'+(i+1)+'</span><span class="c">'+l.split('').join(' ')+'</span>'+s+'</button></li>'}).join('');
+}
+syl.addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;stop();curLesson=+b.dataset.l;sylRender();lessonRender()});
+function lessonGen(i){
+  const fresh=LESSONS[i].split(''),pool=LESSONS.slice(0,i+1).join('').split('');
+  return ()=>{const g=[];for(let n=0;n<5;n++){let w='';for(let k=0;k<5;k++)w+=Math.random()<0.4?pick(fresh):pick(pool);g.push(w)}return g};
+}
+let showPat=false;
+function lessonRender(){
+  const i=curLesson,chars=LESSONS[i].split(''),known=LESSONS.slice(0,i).join('').length;
+  lessonEl.innerHTML='<div class="lesson-head"><h3>Lesson '+(i+1)+'</h3><label class="toggle"><input type="checkbox" id="patToggle"'+(showPat?' checked':'')+'> Show dits and dahs</label></div>'+
+   '<p>New characters: <b class="mono">'+chars.join(' ')+'</b>.'+(known?' Drills also mix in the '+known+' characters you already know.':' Every drill uses only these four.')+'</p>'+
+   '<p style="color:var(--muted)">'+TIPS[i]+'</p>'+
+   '<div class="pad'+(showPat?'':' hide-pat')+'" id="pad">'+chars.map(c=>'<button class="key" type="button" data-play="'+c.replace('"','&quot;')+'" aria-label="Play '+c+'"><b>'+c+'</b><i>'+CODE[c].replace(/\./g,'·').replace(/-/g,'–')+'</i></button>').join('')+'</div>'+
+   '<div id="lessonDrill"></div>';
+  document.getElementById('patToggle').addEventListener('change',e=>{showPat=e.target.checked;document.getElementById('pad').classList.toggle('hide-pat',!showPat)});
+  Drill(document.getElementById('lessonDrill'),lessonGen(i),{
+    passText:i<LESSONS.length-1?'Move on to lesson '+(i+2)+' when you\'re ready.':'You know all forty characters. Head to stage 2.',
+    onScore:pct=>{if(!(P.best[i]>=pct)){P.best[i]=pct;saveP();sylRender()}}
+  });
+}
+sylRender();lessonRender();
+
+/* word sets */
+const L=s=>s.split(' ');
+const SETS={
+  common:{name:'Common words',note:'The words that fill most conversations. Learn them as whole sounds.',gen:()=>Array.from({length:5},()=>pick(L('THE AND YOU NAME HERE IS UR RIG ANT WX SUN RAIN COLD HOT GOOD WORK CALL TIME DAY NOW')))},
+  abbr:{name:'Abbreviations',note:'Operators shorten everything. These are on almost every contact.',gen:()=>Array.from({length:6},()=>pick(L('CQ DE TNX FB OM UR ES HR WX RST PSE AGN GM GA GE 73 88 BK HW FER CUL')))},
+  calls:{name:'Callsigns',note:'Callsigns mix letters and numbers with no pattern to guess from. They are the hardest copy for most people.',gen:()=>Array.from({length:4},()=>{const pre=pick(L('K W N AA KD KB KC VE G M DL F JA VK EA ON PA I'));const suf=Array.from({length:1+Math.floor(Math.random()*3)},()=>pick('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))).join('');return pre+Math.floor(Math.random()*10)+suf})},
+  qso:{name:'QSO lines',note:'Real lines from a basic contact. Lower overall speed if the numbers trip you up.',gen:()=>{const name=pick(L('JOHN MARY BOB ANN TOM SUE JIM KIM'));const qth=pick(L('OHIO TEXAS DENVER BOSTON IOWA MAINE UTAH'));const rst=pick(L('599 579 559 449 589'));return pick([['UR','RST',rst],['NAME',name],['QTH',qth],['TNX','FER','QSO','73'],['RIG','HR','IS','QRP','5W'],['WX','HR','SUNNY','ES','COLD']]).concat(pick([['NAME',name],['QTH',qth],['RST',rst]]))}}
+};
+const seg=document.getElementById('setSeg');let curSet='common';
+function setRender(){
+  seg.innerHTML=Object.keys(SETS).map(k=>'<button class="btn sm q" type="button" data-set="'+k+'" aria-pressed="'+(k===curSet)+'">'+SETS[k].name+'</button>').join('');
+  document.getElementById('setNote').textContent=SETS[curSet].note;
+  Drill(document.getElementById('wordDrill'),SETS[curSet].gen,{passText:'Clean copy. Try a faster overall speed.'});
+}
+seg.addEventListener('click',e=>{const b=e.target.closest('[data-set]');if(!b)return;stop();curSet=b.dataset.set;setRender()});
+setRender();
+
+const ABBR=[['CQ','Calling any station'],['DE','From, as in "this is"'],['K','Over, go ahead'],['RST','Signal report: readability, strength, tone'],['QTH','My location is'],['QRZ','Who is calling me?'],['QRS','Please send slower'],['QSL','I confirm, received'],['QRM','Interference from other stations'],['TNX','Thanks'],['FB','Fine business, meaning great'],['73','Best regards'],['<AR>','End of message'],['<SK>','End of contact'],['<BT>','Break, same as =']];
+document.getElementById('abbrTable').innerHTML=ABBR.map(a=>'<tr><td class="mono">'+a[0].replace(/[<>]/g,'')+'</td><td>'+a[1]+'</td><td><button class="btn sm q" type="button" data-play="'+a[0].replace(/</g,'&lt;').replace(/>/g,'&gt;')+'"><span class="tri"></span>Play</button></td></tr>').join('');
+
+/* reference chart */
+const pat=c=>c.replace(/\./g,'·').replace(/-/g,'–');
+const tile=(label,play,code)=>'<button class="key" type="button" data-play="'+play.replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'"><b>'+label+'</b><i>'+pat(code)+'</i></button>';
+document.getElementById('chL').innerHTML='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c=>tile(c,c,CODE[c])).join('');
+document.getElementById('chN').innerHTML='1234567890'.split('').map(c=>tile(c,c,CODE[c])).join('');
+document.getElementById('chP').innerHTML='.,?/=+-@\'!:'.split('').map(c=>tile(c,c,CODE[c])).join('')+PROSIGNS.map(p=>tile(p[0],'<'+p[0]+'>',p[1])).join('');
+
+/* simple start: five steps by length */
+const STEPS=[
+ ['Singles','ET','The two shortest letters. E is one dit, T is one dah.'],
+ ['Doubles','IANM','Two sounds each, every mix of dit and dah.'],
+ ['Triples','SURWDKGO','Three sounds each. S is three dits, O is three dahs.'],
+ ['Quads','HVFLPJBXCYZQ','Four sounds each. Take your time with these.'],
+ ['Numbers','1234567890','Always five sounds. 1 to 5 start with dits, 6 to 0 start with dahs.']
+];
+document.getElementById('simple').innerHTML=STEPS.map((s,i)=>'<div class="step"><div class="sn">'+(i+1)+'</div><div class="txt"><h3>'+s[0]+'</h3><p>'+s[2]+'</p><div class="pad">'+s[1].split('').map(c=>tile(c,c,CODE[c])).join('')+'</div></div></div>').join('');
+const chips=(s,arrow)=>'<span class="ladder">'+s.split(' ').map(c=>'<button class="chip" type="button" data-play="'+c+'">'+c+' '+pat(CODE[c])+'</button>').join(arrow?'<span aria-hidden="true">→</span>':'')+'</span>';
+const PATS=[
+ ['Opposites',chips('A N')+chips('D U')+chips('K R'),'Swap every dit for a dah and you get the other letter.'],
+ ['Dit ladder',chips('E I S H 5',1),'Add one dit each time.'],
+ ['Dah ladder',chips('T M O 0',1),'Add one dah each time.'],
+ ['SOS','<span class="ladder"><button class="chip" type="button" data-play="&lt;SOS&gt;">SOS ···–––···</button></span>','Three dits, three dahs, three dits, sent as one sound.']
+];
+document.getElementById('patterns').innerHTML=PATS.map(p=>'<li><span class="pn">'+p[0]+'</span><div class="pv">'+p[1]+'<small>'+p[2]+'</small></div></li>').join('');
+
+const quiz=document.getElementById('quiz');
+let qStep=0,qAns=null,qPrev=null,qRight=0,qTotal=0,qMissed=false,qT=null;
+function qScore(){document.getElementById('qscore').textContent=qTotal?'Right first try: '+qRight+' of '+qTotal:''}
+function quizRender(){
+  clearTimeout(qT);qAns=null;qRight=0;qTotal=0;
+  quiz.innerHTML='<h3>Quiz yourself</h3><div class="seg">'+STEPS.map((s,i)=>'<button class="btn sm q" type="button" data-qs="'+i+'" aria-pressed="'+(i===qStep)+'">'+(i+1)+'. '+s[0]+'</button>').join('')+'</div>'+
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn" type="button" id="qplay"><span class="tri"></span>Play a letter</button><span class="meta" id="qscore"></span></div>'+
+    '<p>Which letter did you hear?</p><div class="choices">'+STEPS[qStep][1].split('').map(c=>'<button class="key" type="button" data-qc="'+c+'"><b>'+c+'</b></button>').join('')+'</div>'+
+    '<div class="qfb" id="qfb" aria-live="polite">Press play to hear your first letter.</div>';
+  qScore();
+}
+function ask(){
+  const L=STEPS[qStep][1].split('');let c;do{c=pick(L)}while(c===qPrev);
+  qPrev=c;qAns=c;qMissed=false;
+  quiz.querySelectorAll('[data-qc]').forEach(b=>b.classList.remove('right','wrong'));
+  document.getElementById('qfb').textContent='Listen, then pick a letter.';
+  document.getElementById('qplay').innerHTML='<span class="tri"></span>Hear it again';
+  play(c);
+}
+quiz.addEventListener('click',e=>{
+  const s=e.target.closest('[data-qs]');if(s){stop();qStep=+s.dataset.qs;qPrev=null;quizRender();return}
+  if(e.target.closest('#qplay')){if(qAns)play(qAns);else ask();return}
+  const b=e.target.closest('[data-qc]');if(!b)return;
+  if(!qAns){ask();return}
+  const fb=document.getElementById('qfb');
+  if(b.dataset.qc===qAns){
+    b.classList.add('right');qTotal++;if(!qMissed)qRight++;
+    fb.textContent='Yes, that was '+qAns+'   '+pat(CODE[qAns]);qAns=null;qScore();
+    qT=setTimeout(ask,1200);
+  }else{
+    b.classList.add('wrong');qMissed=true;
+    fb.textContent='Not that one. Listen again and try another.';play(qAns);
+  }
+});
+quizRender();
+
+/* translator */
+const tx=document.getElementById('tx'),txout=document.getElementById('txout');
+function txRender(){
+  const toks=tokens(tx.value);
+  txout.innerHTML=toks.map(t=>t===' '?'<span class="w"> / </span>':pat(t.code)).join('&nbsp;&nbsp;')||'<span style="color:var(--muted)">Type letters or numbers above.</span>';
+}
+tx.addEventListener('input',txRender);txRender();
+document.getElementById('txplay').addEventListener('click',e=>playFrom(e.currentTarget,tx.value));
+
+/* keyer */
+const paddle=document.getElementById('paddle'),kout=document.getElementById('kout'),ktape=document.getElementById('ktape'),kstat=document.getElementById('kstat'),kfb=document.getElementById('kfb'),ktarget=document.getElementById('ktarget'),swpm=document.getElementById('swpm');
+swpm.value=String(S.swpm);if(!swpm.value){swpm.value='15';S.swpm=15}
+swpm.addEventListener('change',()=>{S.swpm=+swpm.value;saveS()});
+const TARGETS=L('CQ TEST 73 PARIS SOS DE TNX NAME QTH FB RST 599 HELLO MORSE');
+let target='CQ';ktarget.textContent=target;
+let kOsc=null,kGain=null,kDown=false,kT0=0,kLastUp=0,kCur='',kText='',kCharT=null,kWordT=null;
+const unitMs=()=>1200/S.swpm;
+function kRender(){kout.innerHTML=kText.replace(/[&<>]/g,'')+'<span class="cur">'+pat(kCur)+'</span>'}
+function tapeAdd(html){ktape.insertAdjacentHTML('beforeend',html);while(ktape.children.length>120)ktape.removeChild(ktape.firstChild)}
+function keyDown(){
+  if(kDown)return;kDown=true;stop();const a=ac();
+  if(!kOsc){kOsc=a.createOscillator();kGain=a.createGain();kGain.gain.value=0;kOsc.connect(kGain);kGain.connect(a.destination);kOsc.start()}
+  kOsc.frequency.setValueAtTime(S.freq,a.currentTime);kGain.gain.cancelScheduledValues(a.currentTime);kGain.gain.setTargetAtTime(S.vol*0.6,a.currentTime,0.004);
+  clearTimeout(kCharT);clearTimeout(kWordT);
+  const now=performance.now();
+  if(kLastUp){const gap=Math.min((now-kLastUp)/unitMs(),8);tapeAdd('<u style="width:'+(gap*6)+'px"></u>')}
+  kT0=now;paddle.classList.add('down');
+}
+function keyUp(){
+  if(!kDown)return;kDown=false;paddle.classList.remove('down');
+  if(kGain){kGain.gain.cancelScheduledValues(ctx.currentTime);kGain.gain.setTargetAtTime(0,ctx.currentTime,0.004)}
+  const now=performance.now(),dur=now-kT0,u=unitMs();
+  const sym=dur<2*u?'.':'-';kCur+=sym;
+  tapeAdd('<i style="width:'+Math.max(3,Math.min(dur/u,6)*6)+'px"></i>');
+  const ideal=sym==='.'?u:3*u;const off=Math.round((dur-ideal)/ideal*100);
+  kstat.textContent='Last '+(sym==='.'?'dit':'dah')+' '+Math.round(dur)+' ms, target '+Math.round(ideal)+' ms ('+(off>=0?'+':'')+off+'%). Letter ends after '+Math.round(2.5*u)+' ms of silence.';
+  kLastUp=now;kRender();
+  kCharT=setTimeout(()=>{kText+=REV[kCur]||'*';kCur='';kRender()},2.5*u);
+  kWordT=setTimeout(()=>{kText+=' ';kLastUp=0;tapeAdd('<s></s>');kRender();checkWord()},6*u);
+}
+function checkWord(){
+  const words=kText.trim().split(/\s+/);const last=words[words.length-1]||'';
+  if(!last)return;
+  if(last===target){kfb.className='kfb ok';kfb.textContent='Clean. You sent '+target+'.'}
+  else{kfb.className='kfb no';kfb.textContent='Decoded as '+last+'. '+(last.indexOf('*')>-1?'* means a pattern that isn\'t a letter, check your dah length.':'Try again, mind the gaps between letters.')}
+}
+paddle.addEventListener('pointerdown',e=>{e.preventDefault();paddle.focus({preventScroll:true});try{paddle.setPointerCapture(e.pointerId)}catch(_){}keyDown()});
+paddle.addEventListener('pointerup',keyUp);paddle.addEventListener('pointercancel',keyUp);
+paddle.addEventListener('keydown',e=>{if(e.code==='Space'||e.key===' '){e.preventDefault();if(!e.repeat)keyDown()}});
+paddle.addEventListener('keyup',e=>{if(e.code==='Space'||e.key===' '){e.preventDefault();keyUp()}});
+paddle.addEventListener('blur',keyUp);
+paddle.addEventListener('click',e=>e.preventDefault());
+paddle.addEventListener('contextmenu',e=>e.preventDefault());
+document.getElementById('kclear').addEventListener('click',()=>{clearTimeout(kCharT);clearTimeout(kWordT);kText='';kCur='';kLastUp=0;ktape.innerHTML='';kfb.textContent='';kRender()});
+document.getElementById('knext').addEventListener('click',()=>{let t;do{t=pick(TARGETS)}while(t===target);target=t;ktarget.textContent=t;kfb.textContent=''});
+document.getElementById('khear').addEventListener('click',e=>{const sv=S.cwpm,se=S.ewpm;S.cwpm=S.swpm;S.ewpm=S.swpm;playFrom(e.currentTarget,target);S.cwpm=sv;S.ewpm=se});
+kRender();
+})();
+</script>
+
+</html>
