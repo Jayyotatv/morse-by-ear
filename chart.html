@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Morse code chart, Morse by Ear</title>
+<meta name="description" content="The full Morse code chart: letters, numbers, punctuation, prosigns and common abbreviations. Tap any character to hear it.">
+<link rel="canonical" href="https://jayyotatv.github.io/morse-by-ear/chart.html">
+<meta property="og:title" content="Morse code chart you can hear">
+<meta property="og:image" content="https://jayyotatv.github.io/morse-by-ear/assets/og.jpg">
+<meta name="theme-color" content="#1B2620">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.top{padding-block:24px 48px;display:grid;gap:16px}
+.top h1{font-size:var(--t-h)}
+.grp{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:24px 48px;padding-block:48px;border-top:1px solid var(--rule)}
+.grp h2{font-size:40px}
+.grp .note{font-size:var(--t-s);color:var(--ink-2);margin-top:10px}
+.chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px}
+.chart .tile{grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;padding:14px 16px;gap:14px;min-height:64px}
+.chart .tile b{font-size:28px;min-width:24px}
+.chart .tile .glyph{font-size:18px}
+@media (max-width:760px){.grp{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.chart{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}.chart .tile{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.chart .tile .glyph{font-size:14px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="frame">
+  <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+  <nav class="links" aria-label="Main"><a href="learn.html">Courses</a><a href="practice.html">Practice</a><a href="chart.html" aria-current="page">Chart</a><a href="guide.html">Guide</a></nav>
+  <button class="sound-btn" type="button">Sound</button>
+</div></header>
+
+<main id="main" class="frame" style="padding-bottom:96px">
+  <div class="top">
+    <h1>Morse code chart</h1>
+    <p class="lead">Every character, drawn to scale. Tap one to hear it. Use this to check a letter after a drill, not to learn from. Your ear learns faster than your eyes.</p>
+  </div>
+  <section class="grp"><div><h2>Letters</h2><p class="note">A dah is three times as long as a dit.</p></div><div class="chart" id="chL"></div></section>
+  <section class="grp"><div><h2>Numbers</h2><p class="note">Always five sounds. 1 to 5 start with dits, 6 to 0 with dahs.</p></div><div class="chart" id="chN"></div></section>
+  <section class="grp"><div><h2>Punctuation</h2><p class="note">The period and comma are six sounds each.</p></div><div class="chart" id="chP"></div></section>
+  <section class="grp"><div><h2>Prosigns</h2><p class="note">Two or more letters sent as one, with no gap between them.</p></div><div class="chart" id="chS"></div></section>
+  <section class="grp"><div><h2>On the air</h2><p class="note">The short codes nearly every contact uses.</p></div>
+    <div class="tbl"><table><thead><tr><th>Code</th><th>Meaning</th><th><span class="sr">Play</span></th></tr></thead><tbody id="abbr"></tbody></table></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="frame">
+    <div>
+      <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+      <p class="small" style="margin-top:14px">Free Morse code courses that teach by sound.</p>
+      <nav aria-label="Footer"><a href="learn.html">Courses</a><a href="practice.html">Practice</a><a href="chart.html">Chart</a><a href="guide.html">Guide</a></nav>
+    </div>
+    <div><p class="small">International Morse code as set out in ITU-R M.1677.</p></div>
+  </div>
+</footer>
+
+<script src="assets/morse.js"></script>
+<script>
+(function(){
+  const M=window.MBE;
+  const fill=(id,chars)=>{document.getElementById(id).innerHTML=chars.map(c=>M.tile(c)).join('')};
+  fill('chL','ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''));
+  fill('chN','1234567890'.split(''));
+  fill('chP','.,?/=+-@\'!:'.split(''));
+  document.getElementById('chS').innerHTML=[['AR','End of message'],['SK','End of contact'],['BT','New paragraph'],['KN','Go ahead, only you'],['SOS','Distress']].map(p=>M.tile(p[0],{play:'<'+p[0]+'>',name:p[0]+', '+p[1]})).join('');
+  const A=[['CQ','Calling any station'],['DE','From, as in "this is"'],['K','Over, go ahead'],['BK','Back to you'],['R','Received'],['RST','Signal report: readability, strength, tone'],['QTH','My location is'],['QRZ','Who is calling me?'],['QRS','Please send slower'],['QRQ','Please send faster'],['QSL','I confirm, received'],['QRM','Interference from other stations'],['QSB','Your signal is fading'],['QRP','Low power'],['TNX','Thanks'],['FB','Fine business, meaning great'],['UR','Your'],['ES','And'],['HR','Here'],['WX','Weather'],['73','Best regards'],['88','Love and kisses']];
+  document.getElementById('abbr').innerHTML=A.map(a=>'<tr><td><b>'+a[0]+'</b></td><td>'+M.esc(a[1])+'</td><td><button class="btn sm plain" type="button" data-play="'+a[0]+'" aria-label="Play '+a[0]+'"><span class="tri"></span></button></td></tr>').join('');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Practice, Morse by Ear</title>
+<meta name="description" content="Free Morse code practice: a 60 second letter sprint, copy drills for groups, words and callsigns, a practice key that decodes your sending, and a text to Morse translator.">
+<link rel="canonical" href="https://jayyotatv.github.io/morse-by-ear/practice.html">
+<meta property="og:title" content="Morse by Ear practice">
+<meta property="og:image" content="https://jayyotatv.github.io/morse-by-ear/assets/og.jpg">
+<meta name="theme-color" content="#1B2620">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.top{padding-block:24px 56px;display:grid;gap:16px}
+.top h1{font-size:var(--t-h)}
+.jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.tool{padding-block:clamp(64px,8vw,112px)}
+.tool + .tool{border-top:1px solid var(--rule)}
+.tool-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 48px;align-items:end;margin-bottom:36px}
+@media (max-width:820px){.tool-head{grid-template-columns:1fr}}
+
+.sprint{background:var(--field);color:var(--field-ink);border-radius:var(--r);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);overflow:hidden}
+.sprint-play{padding:clamp(22px,3vw,40px);display:grid;gap:20px;align-content:start}
+.sprint .clock{display:flex;gap:40px;flex-wrap:wrap}
+.sprint .clock div{display:grid;gap:2px}
+.sprint .clock b{font:800 72px/1 var(--display)}
+.sprint .clock span{font-size:var(--t-s);color:var(--field-2)}
+.sprint .tile{background:#ffffff12;color:var(--field-ink)}
+.sprint .tile:hover{background:#ffffff22}
+.sprint .tile.right{background:var(--ok)}
+.sprint .tile.wrong{background:var(--bad)}
+.sprint .seg{display:flex;gap:6px;flex-wrap:wrap}
+.sprint .btn.plain{background:#ffffff14;color:var(--field-ink)}
+.sprint .small{color:var(--field-2)}
+.sprint figure{margin:0;min-height:100%}
+.sprint figure img{width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){.sprint{grid-template-columns:1fr}.sprint figure{order:-1;aspect-ratio:3/2}}
+
+.panel{background:var(--raised);border-radius:var(--r);padding:clamp(20px,3vw,36px)}
+.split{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:start}
+.split figure{margin:0}
+.split figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r)}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+.field-wrap{background:var(--field);border-radius:var(--r);padding:clamp(14px,2vw,22px)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="frame">
+  <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+  <nav class="links" aria-label="Main"><a href="learn.html">Courses</a><a href="practice.html" aria-current="page">Practice</a><a href="chart.html">Chart</a><a href="guide.html">Guide</a></nav>
+  <button class="sound-btn" type="button">Sound</button>
+</div></header>
+
+<main id="main">
+  <div class="frame top">
+    <h1>Practice</h1>
+    <p class="lead">Drill on your own terms. Every tool uses your sound settings and counts toward your practice days.</p>
+    <div class="jump"><a class="btn sm plain" href="#sprint">Sprint</a><a class="btn sm plain" href="#copy">Free copy</a><a class="btn sm plain" href="#key">Practice key</a><a class="btn sm plain" href="#translate">Translator</a></div>
+  </div>
+
+  <section class="frame tool" id="sprint" style="padding-top:0">
+    <div class="tool-head"><h2>60 second sprint</h2><p class="lead">Hear a letter, pick it or press its key. Right answers move on at once. Wrong ones play again.</p></div>
+    <div class="sprint">
+      <div class="sprint-play" id="sprintRoot"></div>
+      <figure><img src="assets/img/nw7us-800.jpg" srcset="assets/img/nw7us-800.jpg 800w, assets/img/nw7us.jpg 1600w" sizes="(max-width:900px) 100vw, 45vw" width="1600" height="1337" alt="Amateur radio operator NW7US copying Morse by hand at his station" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="frame tool" id="copy">
+    <div class="tool-head"><h2>Free copy</h2><p class="lead">Pick what to copy. Letters you know uses every class you've passed in First Letters and Ear Speed.</p></div>
+    <div class="split">
+      <div class="panel work"><div class="row" id="copySeg" role="group" aria-label="What to copy"></div><div id="copyRoot"></div></div>
+      <figure><img src="assets/img/paddle-800.jpg" srcset="assets/img/paddle-800.jpg 800w, assets/img/paddle.jpg 1600w" sizes="(max-width:900px) 100vw, 40vw" width="1600" height="1065" alt="An iambic paddle key with clear plastic finger pieces" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="frame tool" id="key">
+    <div class="tool-head"><h2>Practice key</h2><p class="lead">Hold to send, or tap the key once and use the space bar. The decoder reads your timing, so clean rhythm is the only way to the right letters.</p></div>
+    <div class="field-wrap"><div id="keyRoot"></div></div>
+  </section>
+
+  <section class="frame tool" id="translate">
+    <div class="tool-head"><h2>Translator</h2><p class="lead">Turn any text into Morse you can see and hear. Handy for checking a word you just copied.</p></div>
+    <div class="panel" id="txRoot"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="frame">
+    <div>
+      <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+      <p class="small" style="margin-top:14px">Free Morse code courses that teach by sound.</p>
+      <nav aria-label="Footer"><a href="learn.html">Courses</a><a href="practice.html">Practice</a><a href="chart.html">Chart</a><a href="guide.html">Guide</a></nav>
+    </div>
+    <div><p class="small">Photos: <a href="https://commons.wikimedia.org/wiki/File:NW7US_at_the_Morse-code_Key.jpg">NW7US at the key</a> by NW7US, CC BY-SA 4.0. <a href="https://commons.wikimedia.org/wiki/File:Bencher_BY-1_Iambic_Paddle.JPG">Iambic paddle</a> by camelNotation, CC0. Shown in greyscale.</p></div>
+  </div>
+</footer>
+
+<script src="assets/morse.js"></script>
+<script src="assets/courses.js"></script>
+<script src="assets/practice.js"></script>
+</body>
+</html>

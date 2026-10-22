@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Courses, Morse by Ear</title>
+<meta name="description" content="Five free Morse code courses: First Letters, Ear Speed, Words on the Air, Sending and First Contact. Short classes with quizzes, copy drills and a practice key.">
+<link rel="canonical" href="https://jayyotatv.github.io/morse-by-ear/learn.html">
+<meta property="og:title" content="Morse by Ear courses">
+<meta property="og:description" content="Short classes from your first two letters to a full contact.">
+<meta property="og:image" content="https://jayyotatv.github.io/morse-by-ear/assets/og.jpg">
+<meta name="theme-color" content="#1B2620">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.page{padding-block:24px 120px;display:grid;gap:56px}
+.dash{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px 48px;align-items:end}
+.dash h1{font-size:var(--t-h)}
+.stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;background:var(--step);border-radius:var(--r);padding:24px}
+.stats div{display:grid;gap:4px}
+.stats b{font:800 48px/1 var(--display)}
+.stats span{font-size:var(--t-s);color:var(--ink-2)}
+@media (max-width:720px){.dash{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.cat{list-style:none;margin:0;padding:0;counter-reset:c}
+.cat li{counter-increment:c}
+.cat a{display:grid;grid-template-columns:64px minmax(0,1fr) minmax(0,1.2fr) minmax(0,220px);gap:12px 28px;align-items:center;padding-block:26px;text-decoration:none;border-top:1px solid var(--rule)}
+.cat li:last-child a{border-bottom:1px solid var(--rule)}
+.cat a::before{content:counter(c);font:800 48px/1 var(--display);color:var(--brass-text)}
+.cat h2{font-size:clamp(32px,3.4vw,46px)}
+.cat .meta{font-size:var(--t-s);color:var(--ink-2);margin-top:8px}
+.cat a:hover h2{color:var(--brass-text)}
+.prog{display:grid;gap:8px}
+.prog .bar{display:flex;gap:4px;flex-wrap:wrap}
+.prog .bar i{width:16px;height:8px;border-radius:1px;background:var(--step)}
+.prog .bar i.d{background:var(--ink)}
+.prog span{font-size:var(--t-s);color:var(--ink-2)}
+@media (max-width:900px){.cat a{grid-template-columns:44px minmax(0,1fr)}.cat a::before{grid-row:span 3;align-self:start;font-size:38px}}
+
+.back{display:inline-flex;align-items:center;gap:10px}
+.chead{display:grid;gap:14px;margin-top:8px}
+.chead h2{font-size:var(--t-h)}
+.cbody{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:32px;align-items:start;margin-top:40px}
+.classes{list-style:none;margin:0;padding:0;display:grid;gap:2px;position:sticky;top:16px}
+.classes button{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:34px minmax(0,1fr);gap:2px 12px;padding:12px 14px;border-radius:var(--r);min-height:48px}
+.classes button:hover{background:var(--step)}
+.classes button:focus-visible{outline:3px solid var(--brass)}
+.classes button[aria-current="true"]{background:var(--raised)}
+.classes .n{font:800 24px/1 var(--display);color:var(--ink-2);grid-row:span 2}
+.classes [aria-current="true"] .n{color:var(--brass-text)}
+.classes .t{font-weight:700}
+.classes .s{font-size:14px;color:var(--ink-2)}
+.classes .s.ok{color:var(--ok);font-weight:700}
+.player{background:var(--raised);border-radius:var(--r);padding:clamp(20px,3vw,36px);display:grid;gap:22px;min-width:0}
+.player .tile{background:var(--step)}
+.player .tile:hover{background:var(--rule)}
+.player .tile.on{background:var(--brass)}
+.player .tile.right{background:var(--ok)}
+.player .tile.wrong{background:var(--bad)}
+.player h3.ct{font:800 clamp(36px,4vw,54px)/.95 var(--display)}
+.player .sub{font-size:var(--t-s);color:var(--ink-2)}
+.player .part{display:grid;gap:14px;padding-top:22px;border-top:1px solid var(--rule)}
+.player .part h4{margin:0;font-size:20px}
+.nextbar{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--step);border-radius:var(--r);padding:16px 18px}
+@media (max-width:900px){
+  .cbody{grid-template-columns:1fr}
+  .classes{position:static;grid-auto-flow:column;grid-auto-columns:minmax(180px,1fr);overflow-x:auto;padding-bottom:6px}
+}
+.qso{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.qso li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;padding-block:14px;border-bottom:1px solid var(--rule)}
+.qso li:last-child{border-bottom:0}
+.qso .line{font-weight:700;letter-spacing:.05em;word-break:break-word}
+.qso .mean{grid-column:2;color:var(--ink-2);font-size:var(--t-s)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fields input{width:100%}
+@media (max-width:560px){.fields{grid-template-columns:1fr}}
+.log{display:grid;gap:8px}
+.log div{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;font-size:16px}
+.log b{color:var(--ink-2);font-weight:700}
+.log span{font-weight:700;letter-spacing:.04em;word-break:break-word}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="frame">
+  <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+  <nav class="links" aria-label="Main"><a href="learn.html" aria-current="page">Courses</a><a href="practice.html">Practice</a><a href="chart.html">Chart</a><a href="guide.html">Guide</a></nav>
+  <button class="sound-btn" type="button">Sound</button>
+</div></header>
+
+<main id="main" class="frame page">
+  <section class="dash" aria-labelledby="dashTitle">
+    <div>
+      <h1 id="dashTitle">Your courses</h1>
+      <p class="lead" style="margin-top:14px">Short classes, one after another. Your progress is saved in this browser.</p>
+    </div>
+    <a class="btn" id="continue" href="#first-letters/1">Start the first class</a>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section id="catalog" aria-label="All courses">
+    <ol class="cat" id="cat"></ol>
+  </section>
+
+  <section id="course" hidden>
+    <a class="textlink back" href="#"><span aria-hidden="true">←</span> All courses</a>
+    <div class="chead"><h2 id="cTitle"></h2><p class="lead" id="cBlurb"></p></div>
+    <div class="cbody">
+      <ol class="classes" id="classList" aria-label="Classes"></ol>
+      <div class="player" id="player" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="frame">
+    <div>
+      <a class="word" href="./"><span class="glyph" aria-hidden="true"><i></i><i class="d"></i></span>Morse by Ear</a>
+      <p class="small" style="margin-top:14px">Free Morse code courses that teach by sound.</p>
+      <nav aria-label="Footer"><a href="learn.html">Courses</a><a href="practice.html">Practice</a><a href="chart.html">Chart</a><a href="guide.html">Guide</a></nav>
+    </div>
+    <div><p class="small">Progress lives in this browser only. Clearing your browser data resets it.</p><p class="small" style="margin-top:12px"><button class="textlink" type="button" id="reset" style="color:var(--field-ink);font-size:15px">Reset my progress</button></p></div>
+  </div>
+</footer>
+
+<script src="assets/morse.js"></script>
+<script src="assets/courses.js"></script>
+<script src="assets/learn.js"></script>
+</body>
+</html>
